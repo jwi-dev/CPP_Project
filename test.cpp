@@ -5,57 +5,22 @@
 #include <fstream>
 #include <iomanip>
 #include <stdio.h>
+#include "logging.h"
+#include "logtime.h"
+#include "logfile.h"
 
-
-#define LOG_(info, msg) dbgPrint(info, msg, __FILE__, __func__, __LINE__)
-
-enum log_level {
-    LOG_INFO,
-    LOG_WARNING,
-    LOG_ERROR,
-    LOG_CRITICAL,
-    LOG_DEBUG,
-};
-
-void getDate(std::string& s) {
-    std::time_t t = std::time(nullptr);
-    std::tm* time_ptr = std::localtime(&t);
-
-    std::stringstream oss;
-    oss << "[";
-    oss << time_ptr->tm_year + 1900 << "-";
-    oss << std::setw(2) << time_ptr->tm_mon << "-";
-    oss << std::setw(2) << time_ptr->tm_mday << ", ";
-    oss << std::setw(2) << time_ptr->tm_hour << ":";
-    oss << std::setw(2) << time_ptr->tm_min << ":";
-    oss << std::setw(2) << time_ptr->tm_sec << "]";
-
-    s = oss.str();
-}
-
-void dbgPrint(int info, const std::string& msg, const char* file, const char* func, int line) {
-    std::string date;
-    getDate(date);
-
-    std::ostringstream oss;     // 화면 출력
-    oss << "[" << info << "]" << date << " " << file << " " << func << " " << line << ": " << msg << std::endl;
-    std::cout << oss.str() << std::endl;
-
-    std::ofstream fout;
-    fout.open("log.log");
-    if(fout.is_open()) {
-        fout << oss.str() << std::endl;
-    }
-    
-    fout.close();
-}
 
 int main() {
 
     while (1) {
         getchar();
 
-        LOG_(LOG_INFO, "INFO");
+        LOG_(LOG_INFO, "status INFO mode");
+        LOG_(LOG_WARNING, "Status WARNING mode");
+        LOG_(LOG_CRITICAL, "Status CRITICAL mode");
+        LOG_(LOG_ERROR, "Status ERROR mode");
+        LOG_(LOG_DEBUG, "Status DEBUG mode");
+
     }
 }
 
