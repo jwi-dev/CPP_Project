@@ -2,6 +2,7 @@
 #include <ctime>
 #include <string>
 #include <sstream>
+#include <fstream>
 #include <iomanip>
 #include <stdio.h>
 
@@ -36,7 +37,17 @@ void dbgPrint(int info, const std::string& msg, const char* file, const char* fu
     std::string date;
     getDate(date);
 
-    std::cout << "[" << info << "]" << date << " " << file << " " << func << " " << line << ": " << msg << std::endl;
+    std::ostringstream oss;     // 화면 출력
+    oss << "[" << info << "]" << date << " " << file << " " << func << " " << line << ": " << msg << std::endl;
+    std::cout << oss.str() << std::endl;
+
+    std::ofstream fout;
+    fout.open("log.log");
+    if(fout.is_open()) {
+        fout << oss.str() << std::endl;
+    }
+    
+    fout.close();
 }
 
 int main() {
