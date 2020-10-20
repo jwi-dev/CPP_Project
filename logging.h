@@ -1,34 +1,65 @@
-#ifndef LOGGING_INFO_H_
-#define LOGGING_INFO_H_
+#ifndef _LOGGING_H_
+#define _LOGGING_H_
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
 #include <string>
-#include <iomanip>
-#include "logfile.h"
-#include "logtime.h"
 
-extern LogFile logfile;
+#define MSG_(classname, level, msg) classname.logMessage(level, msg, __FILE__, __func__, __LINE__)
 
-#define LOG_(info, msg) dbgPrint(info, msg, __FILE__, __func__, __LINE__)
+const int filemaxsize = 3 * 1024;
 
-enum log_level {
-    LOG_INFO,
-    LOG_WARNING,
-    LOG_ERROR,
-    LOG_CRITICAL,
-    LOG_DEBUG,
+enum LogLevel {
+    LEVEL_INFO,
+    LEVEL_WARNING,
+    LEVEL_CRITICAL,
+    LEVEL_ERROR,
+    LEVEL_DEBUG,
 };
 
-class LogInfo {
+enum LogPrint {
+    PRINT_NONE,
+    PRINT_DISPLAY,
+    PRINT_FILE,
+    PRINT_ALL,
+};
+
+struct IValidator { 
+    virtual ~IValidator() {}
+
+    virtual bool levelValidate(int n) = 0;
+    virtual int printValidate() = 0;
+};
+
+class ConditionSet : public IValidator {
+    int levelset;
+    int printset;
 public:
+    ConditionSet(int level, int print);
 
-
-private:
-
+    bool levelValidate(int n) override;
+    int printValidate() override;
 };
 
-void dbgPrint(int info, const std::string& msg, const char* file, const char* func, int line);
+class LogControl {
+    int filesize;
+    int fileindex;
+    std::string msg;
+    std::string filename;
+    std::string fileformat;
+    IValidator* pValidator;
+
+public:
+    LogControl();
+
+    void setValidator(IValidator* p);
+
+    void logMessage(int level, const std::string& msg, const char* file, const char* func, int line);
+
+    void getTime(std::string& s);
+
+    void logFileWrite(const std::string& s);
+
+    char getLevel(int n);
+    
+};
 
 #endif
