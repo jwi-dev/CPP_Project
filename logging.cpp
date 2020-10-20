@@ -1,7 +1,7 @@
 #include "logging.h"
 
 
-void dbgPrint(int info, const std::string& msg, const char* file, const char* func, int line) {
+void dbgPrint(LogFile* logfile, int info, const std::string& msg, const char* file, const char* func, int line) {
     
     char c;
     switch (info) {
@@ -24,18 +24,17 @@ void dbgPrint(int info, const std::string& msg, const char* file, const char* fu
     oss << msg << std::endl;
     std::cout << oss.str() << std::endl;
 
-    std::string filename;
-    getFileInfo(filename);
+    if( logfile->fileOpen() ) {
+        logfile->fileWrite(oss.str());
 
-    filename = filename + ".log";
-
+    }
     
-
+    #if 0
     std::ofstream fout;
     fout.open(filename, std::ios::app);
     if(fout.is_open()) {
         fout << oss.str() << std::endl;
     }
-    
-    fout.close();
+    #endif
+
 }

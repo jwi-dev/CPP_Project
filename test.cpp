@@ -1,25 +1,20 @@
-#include <iostream>
-#include <ctime>
-#include <string>
-#include <sstream>
-#include <fstream>
-#include <iomanip>
-#include <stdio.h>
+
 #include "logging.h"
-#include "logtime.h"
-#include "logfile.h"
+
 
 
 int main() {
 
+    LogFile* lf;
+
     while (1) {
         getchar();
 
-        LOG_(LOG_INFO, "status INFO mode");
-        LOG_(LOG_WARNING, "Status WARNING mode");
-        LOG_(LOG_CRITICAL, "Status CRITICAL mode");
-        LOG_(LOG_ERROR, "Status ERROR mode");
-        LOG_(LOG_DEBUG, "Status DEBUG mode");
+        LOG_(lf, LOG_INFO, "status INFO mode");
+        LOG_(lf, LOG_WARNING, "Status WARNING mode");
+        LOG_(lf, LOG_CRITICAL, "Status CRITICAL mode");
+        LOG_(lf, LOG_ERROR, "Status ERROR mode");
+        LOG_(lf, LOG_DEBUG, "Status DEBUG mode");
 
     }
 }

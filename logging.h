@@ -6,10 +6,10 @@
 #include <sstream>
 #include <string>
 #include <iomanip>
-#include "logtime.h"
 #include "logfile.h"
+#include "logtime.h"
 
-#define LOG_(info, msg) dbgPrint(info, msg, __FILE__, __func__, __LINE__)
+#define LOG_(classname, info, msg) dbgPrint(classname, info, msg, __FILE__, __func__, __LINE__)
 
 enum log_level {
     LOG_INFO,
@@ -27,6 +27,6 @@ private:
 
 };
 
-void dbgPrint(int info, const std::string& msg, const char* file, const char* func, int line);
+void dbgPrint(LogFile* logfile, int info, const std::string& msg, const char* file, const char* func, int line);
 
 #endif
