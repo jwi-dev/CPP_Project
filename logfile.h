@@ -7,7 +7,7 @@
 #include <iomanip>
 #include <sstream>
 
-#define FILE_MAX_SIZE 3 * 1024
+#define FILE_MAX_SIZE 10 * 1024
 
 class LogFile {
 public:
