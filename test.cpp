@@ -1,24 +1,33 @@
 
 #include "logging.h"
 #include "logfile.h"
+#include <thread>
 
+void foo() {
+    LOG_(LOG_WARNING, "foo function is called");
+}
+void goo() {
+    LOG_(LOG_CRITICAL, "Unknow value");
+}
+void hoo() {
+    LOG_(LOG_ERROR, "Function call failed");
+}
 
 int main() {
 
-    int cnt = 100;
+    // int cnt = 100;
 
-    while (cnt--) {
-        getchar();
+    while (1) {
+        // getchar();
 
-        LOG_(LOG_INFO, "status INFO mode");
-        LOG_(LOG_WARNING, "Status WARNING mode");
-        LOG_(LOG_CRITICAL, "Status CRITICAL mode");
-        LOG_(LOG_ERROR, "Status ERROR mode");
-        LOG_(LOG_DEBUG, "Status DEBUG mode");
-
+        LOG_(LOG_INFO, "main function starts");
+        foo();
+        goo();
+        hoo();
+        std::this_thread::sleep_for(std::chrono::duration<int>(1));
     }
 
-    printf("[DBG] program end\n");
+    LOG_(LOG_DEBUG, "Process closing");
 }
 
 #if 0
