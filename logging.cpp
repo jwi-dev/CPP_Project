@@ -38,7 +38,7 @@ void LogControl::logMessage(int level, const std::string& msg, const char* file,
     std::ostringstream oss;
 
     if (pValidator == nullptr || pValidator->levelValidate(level)) {
-        oss << "[" << getLevel(level) << "]";
+        oss << "[" << getLevelChar(level) << "]";
         oss << time << " ";
         oss << file << " ";
         oss << func << " ";
@@ -105,7 +105,7 @@ void LogControl::getTime(std::string& s) {
     oss1 << "[";
     oss1 << time_ptr->tm_year + 1900 << "-";
     oss1 << std::setw(2) << time_ptr->tm_mon << "-";
-    oss1 << std::setw(2) << time_ptr->tm_mday << ", ";
+    oss1 << std::setw(2) << time_ptr->tm_mday << ",";
     oss1 << std::setw(2) << time_ptr->tm_hour << "]";
 
     filename = oss1.str();
@@ -113,7 +113,7 @@ void LogControl::getTime(std::string& s) {
     oss2 << "[";
     oss2 << time_ptr->tm_year + 1900 << "-";
     oss2 << std::setw(2) << time_ptr->tm_mon << "-";
-    oss2 << std::setw(2) << time_ptr->tm_mday << ", ";
+    oss2 << std::setw(2) << time_ptr->tm_mday << ",";
     oss2 << std::setw(2) << time_ptr->tm_hour << ":";
     oss2 << std::setw(2) << time_ptr->tm_min << ":";
     oss2 << std::setw(2) << time_ptr->tm_sec << "]";
@@ -121,7 +121,7 @@ void LogControl::getTime(std::string& s) {
     s = oss2.str();
 }
 
-char LogControl::getLevel(int n) {
+char LogControl::getLevelChar(int n) {
     char c;
     switch (n) {
     case LEVEL_INFO:      c = 'I'; break;

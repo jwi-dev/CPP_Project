@@ -53,12 +53,10 @@ public:
     void setValidator(IValidator* p);
 
     void logMessage(int level, const std::string& msg, const char* file, const char* func, int line);
-
-    void getTime(std::string& s);
-
     void logFileWrite(const std::string& s);
 
-    char getLevel(int n);
+    char getLevelChar(int n);
+    void getTime(std::string& s);
     
 };
 
