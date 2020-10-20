@@ -3,6 +3,8 @@
 
 #include "logging.h"
 
+extern LogFile logfile;
+
 class LogTime {
 public:
 

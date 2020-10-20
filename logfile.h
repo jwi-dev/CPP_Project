@@ -1,24 +1,27 @@
 #ifndef LOG_FILE_INFO_H_
 #define LOG_FILE_INFO_H_
 
-#include "logging.h"
+// #include "logging.h"
+#include <string>
+#include <iostream>
+#include <iomanip>
+#include <sstream>
+
+#define FILE_MAX_SIZE 3 * 1024
 
 class LogFile {
 public:
     LogFile();
     ~LogFile();
-    void getFilename(std::string& s);
-    int getFileSize() { return f_size; }
-    FILE* fileOpen();
+    void setFilename(const std::string& s);
+    int getFileSize();
     void fileClose();
     void fileWrite(const std::string& s);
 private:
-    FILE* fp;
     int f_index;
     int f_size;
     std::string f_format;
-    int f_open;
+    std::string f_name;
 };
-
 
 #endif

@@ -2,57 +2,50 @@
 #include "logfile.h"
 
 LogFile::LogFile() {
-    FILE* fp = nullptr;
     f_index = 0;
     f_size = 0;
     f_format = ".log";
-    f_open = 0;
-
-    fp = fileOpen();
+    f_name = "";
 }
 
 LogFile::~LogFile() {
-    fileClose();
+
 }
 
-void LogFile::getFilename(std::string& s) {
-    std::time_t t = std::time(nullptr);
-    std::tm* time_ptr = std::localtime(&t);
+void LogFile::setFilename(const std::string& s) {
 
-    std::stringstream oss;
-    oss << "[";
-    oss << time_ptr->tm_year + 1900 << "-";
-    oss << std::setw(2) << time_ptr->tm_mon << "-";
-    oss << std::setw(2) << time_ptr->tm_mday << ", ";
-    oss << std::setw(2) << time_ptr->tm_hour << "]";
-    oss << f_format;
+    std::string temp = s + std::to_string(f_index) + f_format;
 
-    s = oss.str();
-}
-
-FILE* LogFile::fileOpen() {
-    if (!f_open) {
-        std::string filename;
-        getFilename(filename);
-
-        FILE* fp = fopen(filename.c_str(), "a");
-    }
-    return fp;
-}
-
-void LogFile::fileClose() {
-
-    if (!fclose(fp)) {
-        fp = nullptr;
+    FILE* fp = fopen(temp.c_str(), "r");
+    if (fp == NULL) {
+        f_index = 0;
+        f_size = 0;
     }
     else {
-        printf("File close error");
+        fseek(fp, 0, SEEK_END);
+        f_size = ftell(fp);
+        fclose(fp);
     }
+
+    if (f_size > FILE_MAX_SIZE) {
+        f_name = s + std::to_string(++f_index) + f_format;
+        f_size = 0;
+    }
+    else 
+        f_name = temp;
 }
 
 void LogFile::fileWrite(const std::string& s) {
-    fprintf(fp, "%s", s.c_str());
+
+    FILE* fp = fopen(f_name.c_str(), "a");
+    if ( fp != NULL ) 
+        fprintf(fp, "%s", s.c_str());
+    else
+        printf("[DBG] file open error!!\n");
+    
+    fclose(fp);
 }
 
-
-
+int LogFile::getFileSize() {
+    return f_size;
+}

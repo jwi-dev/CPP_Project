@@ -1,22 +1,24 @@
 
 #include "logging.h"
-
+#include "logfile.h"
 
 
 int main() {
 
-    LogFile* lf;
+    int cnt = 100;
 
-    while (1) {
+    while (cnt--) {
         getchar();
 
-        LOG_(lf, LOG_INFO, "status INFO mode");
-        LOG_(lf, LOG_WARNING, "Status WARNING mode");
-        LOG_(lf, LOG_CRITICAL, "Status CRITICAL mode");
-        LOG_(lf, LOG_ERROR, "Status ERROR mode");
-        LOG_(lf, LOG_DEBUG, "Status DEBUG mode");
+        LOG_(LOG_INFO, "status INFO mode");
+        LOG_(LOG_WARNING, "Status WARNING mode");
+        LOG_(LOG_CRITICAL, "Status CRITICAL mode");
+        LOG_(LOG_ERROR, "Status ERROR mode");
+        LOG_(LOG_DEBUG, "Status DEBUG mode");
 
     }
+
+    printf("[DBG] program end\n");
 }
 
 #if 0
