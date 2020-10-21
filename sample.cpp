@@ -9,7 +9,6 @@ int main() {
     logset.setLevel(LEVEL_ERROR);
     logset.setPrint(PRINT_ALL);
     logset.setFilesize(3 * 1024);
-    logset.setDirectory("log");
 
     Logger::getInstance().setLogConfig(&logset);
     // Logger& loginstance = Logger::getInstance();  // default logset 사용

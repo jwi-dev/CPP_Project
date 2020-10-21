@@ -15,8 +15,7 @@ Logger::Logger() : config(nullptr) {
         static LogSet defaultset;
         defaultset.setLevel(LEVEL_INFO);
         defaultset.setPrint(PRINT_DISPLAY);
-        defaultset.setDirectory("./");
-        defaultset.setFilesize(10 * 1024);
+        defaultset.setFilesize(5 * 1024);
 
         setLogConfig(&defaultset);
     }
