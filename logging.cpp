@@ -10,37 +10,28 @@
 LogSet::LogSet() {
     levelset = 0;
     printset = 0;
-    filesizeset = 5;
+    filesizeset = 5 * 1024;
     dir.clear();
 }
 
-void LogSet::setPrint(int print) {
-    printset = print;
-}
+void LogSet::setPrint(int print) { printset = print; }
 
-void LogSet::setLevel(int level) {
-    levelset = level;
-}
+void LogSet::setLevel(int level) { levelset = level; }
 
-void LogSet::setFilesize(int size) {
-    filesizeset = size;
-}
+void LogSet::setFilesize(int size) { filesizeset = size; }
 
-void LogSet::setDirectory(const std::string& s) {
-    dir = s;
-}
+void LogSet::setDirectory(const std::string& s) { dir = s; }
 
-bool LogSet::levelValidate(int n) {
-    return n <= levelset;
-}
+bool LogSet::levelConfig(int n) { return n <= levelset; }
 
-int LogSet::printValidate() {
-    return printset;
-}
+int LogSet::printConfig() { return printset; }
+
+int LogSet::filesizeConfig() { return filesizeset; }
+
+const std::string& LogSet::dirConfig() { return dir; }
+
 
 Logger::Logger() : config(nullptr) {
-    filesize = 0;
-    fileindex = 0;
     filename.clear();
     fileformat = ".log";
 
@@ -50,22 +41,20 @@ Logger::Logger() : config(nullptr) {
         defaultset.setLevel(LEVEL_INFO);
         defaultset.setPrint(PRINT_DISPLAY);
         defaultset.setDirectory("./");
-        defaultset.setFilesize(5);
+        defaultset.setFilesize(10 * 1024);
 
-        setValidator(&defaultset);
+        setLogConfig(&defaultset);
     }
 }
 
-void Logger::setValidator(ILogConfig* p) { 
-    config = p;
-}
+void Logger::setLogConfig(ILogConfig* p) { config = p; }
 
 void Logger::logMessage(int level, const std::string& msg, const char* file, const char* func, int line) {
     std::string time;
     getTime(time);
     std::ostringstream oss;
 
-    if (config == nullptr || config->levelValidate(level)) {
+    if (config == nullptr || config->levelConfig(level)) {
         
         oss << "[" << getLevelChar(level) << "]";
         oss << time << " ";
@@ -74,18 +63,18 @@ void Logger::logMessage(int level, const std::string& msg, const char* file, con
         oss << line << ": ";
         oss << msg << std::endl;
 
-        switch (config->printValidate()) {
+        switch (config->printConfig()) {
         case PRINT_DISPLAY:
             std::cout << oss.str();
             break;
 
         case PRINT_FILE:
-            logFileWrite(oss.str());
+            logFileWrite(level, oss.str());
             break;
 
         case PRINT_ALL:
             std::cout << oss.str();
-            logFileWrite(oss.str());
+            logFileWrite(level, oss.str());
             break;
 
         case PRINT_NONE:
@@ -95,35 +84,38 @@ void Logger::logMessage(int level, const std::string& msg, const char* file, con
     
 }
 
-void Logger::logFileWrite(const std::string& s) {
+void Logger::logFileWrite(int _level, const std::string& s) {
     std::ostringstream oss;
     std::string temp;
-    oss << filename << std::to_string(fileindex) << fileformat;
+
+    oss << "[" << getLevelChar(_level) << "]";
+    oss << filename << fileformat;
     temp = oss.str();
-    oss.clear();
-    FILE* fp = fopen(temp.c_str(), "r");
-    if (fp == nullptr) {
-        fileindex = 0;
-        filesize = 0;
-    } else {
+    
+    FILE* fp = nullptr;
+    int index = 0;
+    int size = 0;
+    oss.str("");
+    while (1) {
+        oss << std::to_string(index) << temp;
+        fp = fopen(oss.str().c_str(), "a");
+        oss.str("");
+
+        if (fp == nullptr) {
+            fprintf(stdout, "Fail to open file\n");
+            break;
+        }
+        
         fseek(fp, 0, SEEK_END);
-        filesize = ftell(fp);
+        size = ftell(fp);
+        if ( (size == 0) || (size < config->filesizeConfig()) ) {
+            fprintf(fp, "%s", s.c_str());
+            fclose(fp);
+            break;
+        }
         fclose(fp);
+        ++index;
     }
-
-    if (filesize > filemaxsize) {
-        oss << filename << std::to_string(++fileindex) << fileformat;
-        filesize = 0;
-        temp = oss.str();
-    }
- 
-    fp = fopen(temp.c_str(), "a");
-    if (fp != nullptr)
-        fprintf(fp, "%s", s.c_str());
-    else
-        fprintf(stderr, "Fail to open new file");
-
-    fclose(fp);
 }
 
 void Logger::getTime(std::string& s) {
@@ -151,9 +143,9 @@ void Logger::getTime(std::string& s) {
     s = oss2.str();
 }
 
-char Logger::getLevelChar(int n) {
+char Logger::getLevelChar(int _level) {
     char c;
-    switch (n) {
+    switch (_level) {
     case LEVEL_INFO:      c = 'I'; break;
     case LEVEL_WARNING:   c = 'W'; break;
     case LEVEL_ERROR:     c = 'E'; break;

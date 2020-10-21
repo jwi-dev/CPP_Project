@@ -1,4 +1,3 @@
-
 #include "logging.h"
 #include <iostream>
 #include <thread>
@@ -6,12 +5,12 @@
 int main() {
 
     LogSet logset;
-    logset.setLevel(LEVEL_INFO);
-    logset.setPrint(PRINT_DISPLAY);
-    logset.setFilesize(3);      // 3K byte
-    logset.setDirectory("./");
+    logset.setLevel(LEVEL_ERROR);
+    logset.setPrint(PRINT_ALL);
+    logset.setFilesize(3 * 1024);      // 3K byte
+    logset.setDirectory("log");
 
-    Logger::getInstance().setValidator(&logset);
+    Logger::getInstance().setLogConfig(&logset);
     // Logger& loginstance = Logger::getInstance();  // default logset 사용
     
     while (1) {

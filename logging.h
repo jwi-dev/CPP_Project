@@ -3,10 +3,7 @@
 
 #include <string>
 
-// #define MSG_(classname, level, msg) classname.logMessage(level, msg, __FILE__, __func__, __LINE__)
 #define LOG(level, msg) Logger::getInstance().logMessage(level, msg, __FILE__, __func__, __LINE__)
-
-const int filemaxsize = 3 * 1024;
 
 enum LogLevel {
     LEVEL_INFO,
@@ -26,8 +23,10 @@ enum LogPrint {
 struct ILogConfig { 
     virtual ~ILogConfig() {}
 
-    virtual bool levelValidate(int n) = 0;
-    virtual int printValidate() = 0;
+    virtual bool levelConfig(int n) = 0;
+    virtual int printConfig() = 0;
+    virtual int filesizeConfig() = 0;
+    virtual const std::string& dirConfig() = 0;
 };
 
 class LogSet : public ILogConfig {
@@ -42,14 +41,14 @@ public:
     void setLevel(int level);
     void setFilesize(int size);
     void setDirectory(const std::string& s);
-    bool levelValidate(int n) override;
-    int printValidate() override;
+    bool levelConfig(int n) override;
+    int printConfig() override;
+    int filesizeConfig() override;
+    const std::string& dirConfig() override;
 };
 
 class Logger {
 private:
-    int filesize;
-    int fileindex;
     std::string filename;
     std::string fileformat;
     ILogConfig* config;
@@ -62,11 +61,11 @@ private:
 public:
     static Logger& getInstance();
 
-    void setValidator(ILogConfig* p);
+    void setLogConfig(ILogConfig* p);
 
     void logMessage(int level, const std::string& msg, const char* file, const char* func, int line);
-    void logFileWrite(const std::string& s);
-    char getLevelChar(int n);
+    void logFileWrite(int _level, const std::string& s);
+    char getLevelChar(int _level);
     void getTime(std::string& s);
     
 };
