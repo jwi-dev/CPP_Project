@@ -1,9 +1,10 @@
 #ifndef _LOGGING_H_
 #define _LOGGING_H_
 
-#include <string>
+#include "logset.h"
 
 #define LOG(level, msg) Logger::getInstance().logMessage(level, msg, __FILE__, __func__, __LINE__)
+
 
 enum LogLevel {
     LEVEL_INFO,
@@ -18,33 +19,6 @@ enum LogPrint {
     PRINT_DISPLAY,
     PRINT_FILE,
     PRINT_ALL,
-};
-
-struct ILogConfig { 
-    virtual ~ILogConfig() {}
-
-    virtual bool levelConfig(int n) = 0;
-    virtual int printConfig() = 0;
-    virtual int filesizeConfig() = 0;
-    virtual const std::string& dirConfig() = 0;
-};
-
-class LogSet : public ILogConfig {
-    int levelset;
-    int printset;
-    int filesizeset;
-    std::string dir;
-public:
-    LogSet();
-
-    void setPrint(int print);
-    void setLevel(int level);
-    void setFilesize(int size);
-    void setDirectory(const std::string& s);
-    bool levelConfig(int n) override;
-    int printConfig() override;
-    int filesizeConfig() override;
-    const std::string& dirConfig() override;
 };
 
 class Logger {
