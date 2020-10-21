@@ -3,7 +3,8 @@
 
 #include <string>
 
-#define MSG_(classname, level, msg) classname.logMessage(level, msg, __FILE__, __func__, __LINE__)
+// #define MSG_(classname, level, msg) classname.logMessage(level, msg, __FILE__, __func__, __LINE__)
+#define LOG(level, msg) Logger::getInstance().logMessage(level, msg, __FILE__, __func__, __LINE__)
 
 const int filemaxsize = 3 * 1024;
 
@@ -22,39 +23,49 @@ enum LogPrint {
     PRINT_ALL,
 };
 
-struct IValidator { 
-    virtual ~IValidator() {}
+struct ILogConfig { 
+    virtual ~ILogConfig() {}
 
     virtual bool levelValidate(int n) = 0;
     virtual int printValidate() = 0;
 };
 
-class ConditionSet : public IValidator {
+class LogSet : public ILogConfig {
     int levelset;
     int printset;
+    int filesizeset;
+    std::string dir;
 public:
-    ConditionSet(int level, int print);
+    LogSet();
 
+    void setPrint(int print);
+    void setLevel(int level);
+    void setFilesize(int size);
+    void setDirectory(const std::string& s);
     bool levelValidate(int n) override;
     int printValidate() override;
 };
 
-class LogControl {
+class Logger {
+private:
     int filesize;
     int fileindex;
-    std::string msg;
     std::string filename;
     std::string fileformat;
-    IValidator* pValidator;
+    ILogConfig* config;
+
+    Logger();
+
+    Logger(const Logger&) = delete;
+    void operator=(const Logger&) = delete;
 
 public:
-    LogControl();
+    static Logger& getInstance();
 
-    void setValidator(IValidator* p);
+    void setValidator(ILogConfig* p);
 
     void logMessage(int level, const std::string& msg, const char* file, const char* func, int line);
     void logFileWrite(const std::string& s);
-
     char getLevelChar(int n);
     void getTime(std::string& s);
     

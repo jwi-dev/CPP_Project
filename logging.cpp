@@ -4,40 +4,69 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <stdio.h>
 
 
-ConditionSet::ConditionSet(int level, int print) : levelset(level), printset(print) {
-
+LogSet::LogSet() {
+    levelset = 0;
+    printset = 0;
+    filesizeset = 5;
+    dir.clear();
 }
 
-bool ConditionSet::levelValidate(int n) {
+void LogSet::setPrint(int print) {
+    printset = print;
+}
+
+void LogSet::setLevel(int level) {
+    levelset = level;
+}
+
+void LogSet::setFilesize(int size) {
+    filesizeset = size;
+}
+
+void LogSet::setDirectory(const std::string& s) {
+    dir = s;
+}
+
+bool LogSet::levelValidate(int n) {
     return n <= levelset;
 }
 
-int ConditionSet::printValidate() {
+int LogSet::printValidate() {
     return printset;
 }
 
-
-
-LogControl::LogControl() : pValidator(nullptr) {
+Logger::Logger() : config(nullptr) {
     filesize = 0;
     fileindex = 0;
-    msg.clear();
     filename.clear();
     fileformat = ".log";
+
+    if (config == nullptr) {
+        fprintf(stdout, "initialized config\n");
+        static LogSet defaultset;
+        defaultset.setLevel(LEVEL_INFO);
+        defaultset.setPrint(PRINT_DISPLAY);
+        defaultset.setDirectory("./");
+        defaultset.setFilesize(5);
+
+        setValidator(&defaultset);
+    }
 }
 
-void LogControl::setValidator(IValidator* p) { 
-    pValidator = p;
+void Logger::setValidator(ILogConfig* p) { 
+    config = p;
 }
 
-void LogControl::logMessage(int level, const std::string& msg, const char* file, const char* func, int line) {
+void Logger::logMessage(int level, const std::string& msg, const char* file, const char* func, int line) {
     std::string time;
     getTime(time);
     std::ostringstream oss;
 
-    if (pValidator == nullptr || pValidator->levelValidate(level)) {
+    if (config == nullptr || config->levelValidate(level)) {
+        
         oss << "[" << getLevelChar(level) << "]";
         oss << time << " ";
         oss << file << " ";
@@ -45,7 +74,7 @@ void LogControl::logMessage(int level, const std::string& msg, const char* file,
         oss << line << ": ";
         oss << msg << std::endl;
 
-        switch (pValidator->printValidate()) {
+        switch (config->printValidate()) {
         case PRINT_DISPLAY:
             std::cout << oss.str();
             break;
@@ -63,9 +92,10 @@ void LogControl::logMessage(int level, const std::string& msg, const char* file,
             break;
         }
     }
+    
 }
 
-void LogControl::logFileWrite(const std::string& s) {
+void Logger::logFileWrite(const std::string& s) {
     std::ostringstream oss;
     std::string temp;
     oss << filename << std::to_string(fileindex) << fileformat;
@@ -96,7 +126,7 @@ void LogControl::logFileWrite(const std::string& s) {
     fclose(fp);
 }
 
-void LogControl::getTime(std::string& s) {
+void Logger::getTime(std::string& s) {
     std::time_t t = std::time(nullptr);
     std::tm* time_ptr = std::localtime(&t);
 
@@ -121,7 +151,7 @@ void LogControl::getTime(std::string& s) {
     s = oss2.str();
 }
 
-char LogControl::getLevelChar(int n) {
+char Logger::getLevelChar(int n) {
     char c;
     switch (n) {
     case LEVEL_INFO:      c = 'I'; break;
@@ -133,3 +163,7 @@ char LogControl::getLevelChar(int n) {
     return c;
 }
 
+Logger& Logger::getInstance() {
+    static Logger instance;
+    return instance;
+}

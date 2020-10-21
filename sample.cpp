@@ -5,17 +5,22 @@
 
 int main() {
 
-    LogControl log;
-    ConditionSet iset(LEVEL_INFO, PRINT_DISPLAY);
+    LogSet logset;
+    logset.setLevel(LEVEL_INFO);
+    logset.setPrint(PRINT_DISPLAY);
+    logset.setFilesize(3);      // 3K byte
+    logset.setDirectory("./");
 
-    log.setValidator(&iset);
+    Logger::getInstance().setValidator(&logset);
+    // Logger& loginstance = Logger::getInstance();  // default logset 사용
     
     while (1) {
-        MSG_(log, LEVEL_DEBUG, "print debug message");
-        MSG_(log, LEVEL_ERROR, "print error message");
-        MSG_(log, LEVEL_CRITICAL, "print critical message");
-        MSG_(log, LEVEL_WARNING, "print warning message");
-        MSG_(log, LEVEL_INFO, "print info message");
+        fprintf(stdout, "===== Logging is running =====\n");
+        LOG(LEVEL_DEBUG, "Print DEBUG message");
+        LOG(LEVEL_ERROR, "Print ERROR message");
+        LOG(LEVEL_CRITICAL, "Print CRITICAL message");
+        LOG(LEVEL_WARNING, "Print WARNING message");
+        LOG(LEVEL_INFO, "Print INFO message");
         std::this_thread::sleep_for(std::chrono::duration<int>(1));
     }
 
