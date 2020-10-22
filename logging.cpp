@@ -55,7 +55,6 @@ void Logger::logMessage(int level, const std::string& msg, const char* file, con
             break;
         }
     }
-    
 }
 
 void Logger::logFileWrite(int _level, const std::string& s) {
@@ -76,6 +75,7 @@ void Logger::logFileWrite(int _level, const std::string& s) {
         oss.str("");
 
         if (fp == nullptr) {
+            perror("open");
             fprintf(stdout, "Fail to open file\n");
             break;
         }

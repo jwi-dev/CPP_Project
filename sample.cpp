@@ -6,7 +6,7 @@
 int main() {
 
     LogSet logset;
-    logset.setLevel(LEVEL_ERROR);
+    logset.setLevel(LEVEL_DEBUG);
     logset.setPrint(PRINT_ALL);
     logset.setFilesize(3 * 1024);
 
